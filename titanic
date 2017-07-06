@@ -1,0 +1,31 @@
+> model <- train(Survived ~ Pclass + Sex + SibSp + Embarked + Parch + Fare, data = trainSet, method = 'rf', trControl = trainControl(method = 'cv', number = 5))
+> model
+Random Forest 
+
+891 samples
+  6 predictor
+  2 classes: '0', '1' 
+
+No pre-processing
+Resampling: Cross-Validated (5 fold) 
+Summary of sample sizes: 713, 712, 712, 713, 714 
+Resampling results across tuning parameters:
+
+  mtry  Accuracy   Kappa    
+  2     0.8126084  0.5855450
+  5     0.8102858  0.5907004
+  8     0.8125142  0.5969420
+
+Accuracy was used to select the optimal model using  the largest value.
+The final value used for the model was mtry = 2.
+> testSet$Survived <- predict(model, newdata = testSet)
+Error in `$<-.data.frame`(`*tmp*`, Survived, value = c(1L, 1L, 1L, 1L,  : 
+  replacement has 417 rows, data has 418
+> testSet$Fare <- ifelse(is.na(testSet$Fare), mean(testSet$Fare, na.rm = True), testSet$Fare)
+Error in mean.default(testSet$Fare, na.rm = True) : 
+  object 'True' not found
+> testSet$Fare <- ifelse(is.na(testSet$Fare), mean(testSet$Fare, na.rm = TRUE), testSet$Fare)
+> testSet$Survived <- predict(model, newdata = testSet)
+> submission <- testSet[,c('PassengerId', 'Survived')]
+> write.table(submission, file = 'submission.csv', col.names = TRUE, row.names = FALSE, sep = ',')
+> View(submission)
